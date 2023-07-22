@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <DamageDef>
+    <defName>TD_BloodSplatter</defName>
+    <label>blood splatter</label>
+    <harmsHealth>false</harmsHealth>
+    <canInterruptJobs>false</canInterruptJobs>
+		
+    <explosionCellFleck>TD_BloodSplatterFleck</explosionCellFleck>
+    <explosionColorEdge>(1, 1, 1, 0.05)</explosionColorEdge>
+    <soundExplosion>Hive_Spawn</soundExplosion>
+		
+		<impactSoundType>Blunt</impactSoundType>
+		<defaultDamage>1</defaultDamage>
+  </DamageDef>
+  
+  <FleckDef ParentName="FleckBase">
+    <defName>TD_BloodSplatterFleck</defName>
+    <graphicData>
+      <texPath>Things/Mote/FoodBitMeat</texPath>
+      <shaderType>TransparentPostLight</shaderType>
+      <renderInstanced>true</renderInstanced>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <solidTime>0</solidTime>
+    <fadeOutTime>0.2</fadeOutTime>
+  </FleckDef>
+
+</Defs>
