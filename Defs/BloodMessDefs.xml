@@ -52,8 +52,19 @@
 			<speed>20</speed>
 			<arcHeightFactor>2</arcHeightFactor>
 		</projectile>
-		
-		
 	</ThingDef>
 
+
+
+
+	<TraitDef>
+		<defName>TD_BloodyMess</defName>
+		<commonality>0</commonality> <!-- hardcoded random chance -->
+		<degreeDatas>
+			<li>
+				<label>bloody mess</label>
+				<description>By some strange twist of fate, people around killed by {PAWN_nameDef} die violently. You always see the worst way a person can die.</description>
+			</li>
+		</degreeDatas>
+	</TraitDef>
 </Defs>

@@ -16,9 +16,7 @@ namespace Bloody_Mess
 		//private void DoKillSideEffects(DamageInfo? dinfo, Hediff exactCulprit, bool spawned)
 		public static void Postfix(Pawn __instance, DamageInfo? dinfo)
 		{
-			if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn
-				//Todo: pawn trait is bloody mess, but for now, all player colonists 
-				&& pawn.Faction == Faction.OfPlayer && Rand.Chance(0.5f))
+			if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn && (pawn.story?.traits?.HasTrait(BloodyTrait.TD_BloodyMess) ?? false))
 				BloodyExplosion.DoBloodyExplosion(__instance);
 		}
 	}
