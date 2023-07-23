@@ -15,7 +15,7 @@ namespace Bloody_Mess
 		public static ThingDef TD_ProjectileBlood;
 
 		[DebugAction("General", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
-		private static void DoBloodyExplosion(Pawn pawn)
+		public static void DoBloodyExplosion(Pawn pawn)
 		{
 			Map map = pawn.Map;
 			IntVec3 origin = pawn.Position;
@@ -56,7 +56,8 @@ namespace Bloody_Mess
 
 	public class ProjectileBlood : Projectile
 	{
-		protected override void Impact(Thing hitThing, bool blockedByShield = false)
+		//should be protected
+		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
 			Log.Message($"ProjectileBlood impacted ({hitThing}) at {Position}");
 			FilthMaker.TryMakeFilth(Position, Map, ThingDefOf.Filth_Blood, 4);
