@@ -2,7 +2,7 @@
 <Defs>
 
   <DamageDef>
-    <defName>TD_BloodSplatter</defName>
+    <defName>TD_BloodSplatterDamage</defName>
     <label>blood splatter</label>
     <harmsHealth>false</harmsHealth>
     <canInterruptJobs>false</canInterruptJobs>
@@ -26,5 +26,34 @@
     <solidTime>0</solidTime>
     <fadeOutTime>0.2</fadeOutTime>
   </FleckDef>
+
+
+	<ThingDef>
+		<category>Projectile</category>
+		<tickerType>Normal</tickerType>
+		<altitudeLayer>Projectile</altitudeLayer>
+		<thingClass>Bloody_Mess.ProjectileBlood</thingClass>
+		<label>blood projectile</label>
+		<useHitPoints>False</useHitPoints>
+		<neverMultiSelect>True</neverMultiSelect>
+
+
+		<defName>TD_ProjectileBlood</defName>
+		<graphicData>
+			<!-- Just like the filth -->
+			<graphicClass>Graphic_Cluster</graphicClass>
+			<shaderType>Transparent</shaderType>
+			<texPath>Things/Filth/Spatter</texPath>
+			<color>(131, 34, 34, 180)</color>
+			<drawSize>(2, 2)</drawSize>
+		</graphicData>
+		<projectile>
+			<damageDef>TD_BloodSplatterDamage</damageDef>
+			<speed>20</speed>
+			<arcHeightFactor>2</arcHeightFactor>
+		</projectile>
+		
+		
+	</ThingDef>
 
 </Defs>

@@ -11,32 +11,58 @@ namespace Bloody_Mess
 	[DefOf]
 	public static class BloodyExplosion
 	{
-		public static DamageDef TD_BloodSplatter;
-		[DebugAction("General", actionType = DebugActionType.ToolMap, allowedGameStates = AllowedGameStates.PlayingOnMap)]
-		private static void DoBloodyExplosion()
+		public static DamageDef TD_BloodSplatterDamage;
+		public static ThingDef TD_ProjectileBlood;
+
+		[DebugAction("General", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+		private static void DoBloodyExplosion(Pawn pawn)
 		{
-			float radius = 3f;
-			var damageDef = TD_BloodSplatter;
-			var thingDef = ThingDefOf.Filth_Blood;
+			Map map = pawn.Map;
+			IntVec3 origin = pawn.Position;
+
+			float explosionRadius = 2.5f;
+			var damageDef = TD_BloodSplatterDamage;
 			var soundDef = SoundDefOf.Hive_Spawn;
-			var thingChance = 0.5f;
-			var thingCount = 4;
+			var bloodFilthDef = ThingDefOf.Filth_Blood;
+			var chance = 0.5f;
+			var count = 2;
 			var propagationSpeed = 0.25f;
 
-			GenExplosion.DoExplosion(UI.MouseCell(),
-														Find.CurrentMap,
-														radius,
-														damageDef,//BloodSplatter
+			GenExplosion.DoExplosion(origin,
+														map,
+														explosionRadius,
+														damageDef,
 														null,//attacker?
 														doVisualEffects: false,
 														explosionSound: soundDef,
 														propagationSpeed: propagationSpeed,
-														preExplosionSpawnThingDef: thingDef,
-														preExplosionSpawnChance: thingChance,
-														preExplosionSpawnThingCount: thingCount,
-														postExplosionSpawnThingDef: thingDef,
-														postExplosionSpawnChance: thingChance/4,
-														postExplosionSpawnThingCount: thingCount/4);
+														preExplosionSpawnThingDef: bloodFilthDef,
+														preExplosionSpawnChance: chance,
+														preExplosionSpawnThingCount: count,
+														postExplosionSpawnThingDef: bloodFilthDef,
+														postExplosionSpawnChance: chance/2,
+														postExplosionSpawnThingCount: count);
+
+
+			for (int i = 0; i < 4; i++)
+			{
+				Projectile projectile = (Projectile)GenSpawn.Spawn(TD_ProjectileBlood, pawn.Position, map);
+
+				IntVec3 targetPos = origin + GenRadial.RadialPattern[Rand.Range(GenRadial.NumCellsInRadius(explosionRadius*1.5f), GenRadial.NumCellsInRadius(explosionRadius * 2.5f))];
+				projectile.Launch(pawn, pawn.DrawPos, targetPos, targetPos, ProjectileHitFlags.All);
+			}
+		}
+	}
+
+	public class ProjectileBlood : Projectile
+	{
+		protected override void Impact(Thing hitThing, bool blockedByShield = false)
+		{
+			Log.Message($"ProjectileBlood impacted ({hitThing}) at {Position}");
+			FilthMaker.TryMakeFilth(Position, Map, ThingDefOf.Filth_Blood, 4);
+			//todo: cover pawns in blood
+
+			base.Impact(hitThing, blockedByShield);
 		}
 	}
 }
