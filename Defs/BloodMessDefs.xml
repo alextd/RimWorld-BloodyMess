@@ -9,7 +9,6 @@
 		
     <explosionCellFleck>TD_BloodSplatterFleck</explosionCellFleck>
     <explosionColorEdge>(1, 1, 1, 0.05)</explosionColorEdge>
-    <soundExplosion>Hive_Spawn</soundExplosion>
 		
 		<impactSoundType>Blunt</impactSoundType>
 		<defaultDamage>1</defaultDamage>
