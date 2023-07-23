@@ -14,19 +14,20 @@ namespace Bloody_Mess
 		public static DamageDef TD_BloodSplatterDamage;
 		public static ThingDef TD_ProjectileBlood;
 
+		const float explosionRadius = 2.5f;
+		static readonly DamageDef damageDef = TD_BloodSplatterDamage;
+		static readonly SoundDef soundDef = SoundDefOf.Hive_Spawn;
+		static readonly ThingDef bloodFilthDef = ThingDefOf.Filth_Blood;
+		const float chance = 0.5f;
+		const int count = 2;
+		const float propagationSpeed = 0.25f;
+		const int numProjectiles = 4;
+
 		[DebugAction("General", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
 		public static void DoBloodyExplosion(Pawn pawn)
 		{
 			Map map = pawn.Map;
 			IntVec3 origin = pawn.Position;
-
-			float explosionRadius = 2.5f;
-			var damageDef = TD_BloodSplatterDamage;
-			var soundDef = SoundDefOf.Hive_Spawn;
-			var bloodFilthDef = ThingDefOf.Filth_Blood;
-			var chance = 0.5f;
-			var count = 2;
-			var propagationSpeed = 0.25f;
 
 			GenExplosion.DoExplosion(origin,
 														map,
@@ -44,7 +45,7 @@ namespace Bloody_Mess
 														postExplosionSpawnThingCount: count);
 
 
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < numProjectiles; i++)
 			{
 				Projectile projectile = (Projectile)GenSpawn.Spawn(TD_ProjectileBlood, pawn.Position, map);
 
