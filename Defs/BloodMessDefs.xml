@@ -4,6 +4,8 @@
   <DamageDef>
     <defName>TD_BloodSplatterDamage</defName>
     <label>blood splatter</label>
+		<workerClass>Bloody_Mess.DamageWorker_BloodSplatter</workerClass>
+		
     <harmsHealth>false</harmsHealth>
     <canInterruptJobs>false</canInterruptJobs>
 		

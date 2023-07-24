@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using RimWorld;
+using UnityEngine;
 
 namespace Bloody_Mess
 {
@@ -15,9 +16,6 @@ namespace Bloody_Mess
 		public static ThingDef TD_ProjectileBlood;
 
 		const float explosionRadius = 2.5f;
-		static readonly DamageDef damageDef = TD_BloodSplatterDamage;
-		static readonly SoundDef soundDef = SoundDefOf.Hive_Spawn;
-		static readonly ThingDef bloodFilthDef = ThingDefOf.Filth_Blood;
 		const float chance = 0.5f;
 		const int count = 2;
 		const float propagationSpeed = 0.25f;
@@ -32,15 +30,15 @@ namespace Bloody_Mess
 			GenExplosion.DoExplosion(origin,
 														map,
 														explosionRadius,
-														damageDef,
+														TD_BloodSplatterDamage,
 														null,//attacker?
 														doVisualEffects: false,
-														explosionSound: soundDef,
+														explosionSound: SoundDefOf.Hive_Spawn,
 														propagationSpeed: propagationSpeed,
-														preExplosionSpawnThingDef: bloodFilthDef,
+														preExplosionSpawnThingDef: ThingDefOf.Filth_Blood,
 														preExplosionSpawnChance: chance,
 														preExplosionSpawnThingCount: count,
-														postExplosionSpawnThingDef: bloodFilthDef,
+														postExplosionSpawnThingDef: ThingDefOf.Filth_Blood,
 														postExplosionSpawnChance: chance/2,
 														postExplosionSpawnThingCount: count);
 
@@ -62,9 +60,38 @@ namespace Bloody_Mess
 		{
 			Log.Message($"ProjectileBlood impacted ({hitThing}) at {Position}");
 			FilthMaker.TryMakeFilth(Position, Map, ThingDefOf.Filth_Blood, 4);
-			//todo: cover pawns in blood
+			//todo: cover pawns in blood? heduff like a wound that shows bloody mark?
 
 			base.Impact(hitThing, blockedByShield);
 		}
 	}
+
+	public class DamageWorker_BloodSplatter : DamageWorker
+	{
+		public override void ExplosionAffectCell(Explosion explosion, IntVec3 cell, List<Thing> damagedThings, List<Thing> ignoredThings, bool canThrowMotes)
+		{
+			//watered down DamageWorker because ThrowExplosionCell also throws dust.
+
+			// FleckMaker.ThrowExplosionCell(c, explosion.Map, def.explosionCellFleck, color);
+			// public static void ThrowExplosionCell(IntVec3 cell, Map map, FleckDef fleckDef, Color color)public static void ThrowExplosionCell(IntVec3 cell, Map map, FleckDef fleckDef, Color color)
+
+			Map map = explosion.Map;
+			if (cell.ShouldSpawnMotesAt(map))
+			{
+				float t = Mathf.Clamp01((explosion.Position - cell).LengthHorizontal / explosion.radius);
+				Color color = Color.Lerp(def.explosionColorCenter, def.explosionColorEdge, t);
+				FleckCreationData dataStatic = FleckMaker.GetDataStatic(cell.ToVector3Shifted(), map, def.explosionCellFleck);
+				dataStatic.rotation = 90 * Rand.RangeInclusive(0, 3);
+				dataStatic.instanceColor = color;
+				map.flecks.CreateFleck(dataStatic);
+				/*
+				if (Rand.Value < 0.7f)
+				{
+					ThrowDustPuff(cell, map, 1.2f);
+				}
+				*/
+			}
+		}
+	}
+
 }
