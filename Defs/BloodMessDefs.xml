@@ -34,7 +34,7 @@
 		<tickerType>Normal</tickerType>
 		<altitudeLayer>Projectile</altitudeLayer>
 		<thingClass>Bloody_Mess.ProjectileBlood</thingClass>
-		<label>blood projectile</label>
+		<label>blood splatter</label>
 		<useHitPoints>False</useHitPoints>
 		<neverMultiSelect>True</neverMultiSelect>
 
@@ -52,6 +52,25 @@
 			<damageDef>TD_BloodSplatterDamage</damageDef>
 			<speed>20</speed>
 			<arcHeightFactor>2</arcHeightFactor>
+		</projectile>
+	</ThingDef>
+
+	<ThingDef>
+		<category>Projectile</category>
+		<tickerType>Normal</tickerType>
+		<altitudeLayer>Projectile</altitudeLayer>
+		<thingClass>Bloody_Mess.ProjectileMeat</thingClass>
+		<label>bloody meat</label>
+		<useHitPoints>False</useHitPoints>
+		<neverMultiSelect>True</neverMultiSelect>
+
+
+		<defName>TD_ProjectileMeat</defName>
+		<projectile>
+			<damageDef>TD_BloodSplatterDamage</damageDef>
+			<speed>20</speed>
+			<arcHeightFactor>2</arcHeightFactor>
+			<shadowSize>1</shadowSize>
 		</projectile>
 	</ThingDef>
 

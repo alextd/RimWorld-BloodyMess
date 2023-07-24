@@ -14,12 +14,14 @@ namespace Bloody_Mess
 	{
 		public static DamageDef TD_BloodSplatterDamage;
 		public static ThingDef TD_ProjectileBlood;
+		public static ThingDef TD_ProjectileMeat;
 
 		const float explosionRadius = 2.5f;
 		const float chance = 0.5f;
 		const int count = 2;
 		const float propagationSpeed = 0.25f;
 		const int numProjectiles = 4;
+		const int numProjectilesMeat = 1;
 
 		[DebugAction("General", actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
 		public static void DoBloodyExplosion(Pawn pawn)
@@ -43,12 +45,23 @@ namespace Bloody_Mess
 														postExplosionSpawnThingCount: count);
 
 
+			IntVec3 startPos = pawn.Position;//seems meaningless to projectiles.
+			Vector3 launchPos = pawn.DrawPos;
 			for (int i = 0; i < numProjectiles; i++)
 			{
-				Projectile projectile = (Projectile)GenSpawn.Spawn(TD_ProjectileBlood, pawn.Position, map);
+				Projectile projectile = (Projectile)GenSpawn.Spawn(TD_ProjectileBlood, startPos, map);
 
 				IntVec3 targetPos = origin + GenRadial.RadialPattern[Rand.Range(GenRadial.NumCellsInRadius(explosionRadius*1.5f), GenRadial.NumCellsInRadius(explosionRadius * 2.5f))];
-				projectile.Launch(pawn, pawn.DrawPos, targetPos, targetPos, ProjectileHitFlags.All);
+				projectile.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.All);
+
+				if(i < numProjectilesMeat)
+				{
+					ProjectileMeat projectileMeat = (ProjectileMeat)GenSpawn.Spawn(TD_ProjectileMeat, startPos, map);
+					projectileMeat.projectileMeat.thingDef = pawn.def.race.meatDef;
+					projectileMeat.projectileMeat.count = (int)(pawn.GetStatValue(StatDefOf.MeatAmount) / 10);
+
+					projectileMeat.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.None);
+				}
 			}
 		}
 	}
@@ -60,7 +73,63 @@ namespace Bloody_Mess
 		{
 			Log.Message($"ProjectileBlood impacted ({hitThing}) at {Position}");
 			FilthMaker.TryMakeFilth(Position, Map, ThingDefOf.Filth_Blood, 4);
-			//todo: cover pawns in blood? heduff like a wound that shows bloody mark?
+			//todo: cover pawns in blood? hediff like a wound that shows bloody mark?
+
+			base.Impact(hitThing, blockedByShield);
+		}
+	}
+
+	public class ProjectileMeat : Projectile
+	{
+		public ThingDefCount projectileMeat;
+
+		public override Graphic Graphic
+		{
+			get
+			{
+				if (graphicInt == null)
+				{
+					if (projectileMeat.thingDef.graphicData == null)
+					{
+						return BaseContent.BadGraphic;
+					}
+					graphicInt = projectileMeat.thingDef.graphicData.GraphicColoredFor(this);
+				}
+				return graphicInt;
+			}
+		}
+
+		public override void Draw()
+		{
+			//Same as root but meatDef
+			float num = ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction);
+			Vector3 drawPos = DrawPos;
+			Vector3 position = drawPos + new Vector3(0f, 0f, 1f) * num;
+			if (def.projectile.shadowSize > 0f)
+			{
+				DrawShadow(drawPos, num);
+			}
+
+			Material meatMat = projectileMeat.thingDef.graphic is Graphic_StackCount gr 
+				? gr.SubGraphicForStackCount(projectileMeat.count, projectileMeat.thingDef).MatSingle
+				: projectileMeat.thingDef.DrawMatSingle;
+
+			Graphics.DrawMesh(MeshPool.GridPlane(projectileMeat.thingDef.graphicData.drawSize), position, ExactRotation, meatMat, 0);
+			Comps_PostDraw();
+		}
+
+		//should be protected
+		public override void Impact(Thing hitThing, bool blockedByShield = false)
+		{
+			Log.Message($"ProjectileMeat impacted ({hitThing}) at {Position}");
+			/*
+			 * todo: use random butcher product
+					foreach (Thing item in thing3.ButcherProducts(worker, efficiency))
+			*/
+			Thing impactMeat = ThingMaker.MakeThing(projectileMeat.thingDef);
+			impactMeat.stackCount = projectileMeat.count;
+			GenSpawn.Spawn(impactMeat, Position, Map);
+			//todo: cover pawns in blood? hediff like a wound that shows bloody mark?
 
 			base.Impact(hitThing, blockedByShield);
 		}
@@ -90,8 +159,8 @@ namespace Bloody_Mess
 					ThrowDustPuff(cell, map, 1.2f);
 				}
 				*/
-			}
 		}
+	}
 	}
 
 }
