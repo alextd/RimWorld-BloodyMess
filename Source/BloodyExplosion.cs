@@ -35,7 +35,7 @@ namespace Bloody_Mess
 														TD_BloodSplatterDamage,
 														null,//attacker?
 														doVisualEffects: false,
-														explosionSound: SoundDefOf.Hive_Spawn,
+														explosionSound: SoundDefOf.Hive_Spawn, // todo: maybe something from https://www.youtube.com/watch?v=vsF4BM1qhok
 														propagationSpeed: propagationSpeed,
 														preExplosionSpawnThingDef: ThingDefOf.Filth_Blood,
 														preExplosionSpawnChance: chance,
