@@ -120,7 +120,6 @@ namespace Bloody_Mess
 
 	public class ProjectileMeat : Projectile
 	{
-		//ButcherProducts gives: meatDef, ButcherProducts, leatherDef, and for non-humans: some weird butcherBodyPart
 		private ThingDef meatDef;
 		private int meatCount;
 		private Material meatMat;
@@ -173,10 +172,6 @@ namespace Bloody_Mess
 		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
 //			Log.Message($"ProjectileMeat impacted ({hitThing}) at {Position}");
-			/*
-			 * todo: use random butcher product
-					foreach (Thing item in thing3.ButcherProducts(worker, efficiency))
-			*/
 			Thing impactMeat = ThingMaker.MakeThing(meatDef);
 			impactMeat.stackCount = meatCount;
 			GenSpawn.Spawn(impactMeat, Position, Map);
