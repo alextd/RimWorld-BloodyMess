@@ -29,23 +29,13 @@
   </FleckDef>
 
 
-	<ThingDef>
-		<defName>TD_ProjectileBlood</defName>
+	<ThingDef Abstract="True" Name="TD_ProjectileBase">
 		<category>Projectile</category>
 		<tickerType>Normal</tickerType>
 		<altitudeLayer>Projectile</altitudeLayer>
-		<thingClass>Bloody_Mess.ProjectileBlood</thingClass>
-		<label>blood splatter</label>
+		<thingClass>Bloody_Mess.ProjectileItem</thingClass>
 		<useHitPoints>False</useHitPoints>
 		<neverMultiSelect>True</neverMultiSelect>
-		<graphicData>
-			<!-- Just like the filth -->
-			<graphicClass>Graphic_Cluster</graphicClass>
-			<shaderType>Transparent</shaderType>
-			<texPath>Things/Filth/Spatter</texPath>
-			<color>(131, 34, 34, 180)</color>
-			<drawSize>(2, 2)</drawSize>
-		</graphicData>
 		<projectile>
 			<damageDef>TD_BloodSplatterDamage</damageDef>
 			<speed>20</speed>
@@ -53,19 +43,17 @@
 		</projectile>
 	</ThingDef>
 
-	<ThingDef>
+
+	<ThingDef ParentName="TD_ProjectileBase">
+		<defName>TD_ProjectileBlood</defName>
+		<label>blood splatter</label>
+		<size>(2, 2)</size>
+	</ThingDef>
+
+	<ThingDef ParentName="TD_ProjectileBase">
 		<defName>TD_ProjectileMeat</defName>
-		<category>Projectile</category>
-		<tickerType>Normal</tickerType>
-		<altitudeLayer>Projectile</altitudeLayer>
-		<thingClass>Bloody_Mess.ProjectileMeat</thingClass>
 		<label>bloody meat</label>
-		<useHitPoints>False</useHitPoints>
-		<neverMultiSelect>True</neverMultiSelect>
 		<projectile>
-			<damageDef>TD_BloodSplatterDamage</damageDef>
-			<speed>20</speed>
-			<arcHeightFactor>2</arcHeightFactor>
 			<shadowSize>1</shadowSize>
 		</projectile>
 	</ThingDef>

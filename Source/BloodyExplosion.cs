@@ -52,29 +52,30 @@ namespace Bloody_Mess
 			Vector3 launchPos = pawn.DrawPos;
 			for (int i = 0; i < numProjectiles; i++)
 			{
-				ProjectileBlood projectile = (ProjectileBlood)GenSpawn.Spawn(TD_ProjectileBlood, startPos, map);
-				projectile.bloodDef = bloodDef;
+				ProjectileItem projectileBlood = (ProjectileItem)GenSpawn.Spawn(TD_ProjectileBlood, startPos, map);
+				projectileBlood.SetItem(new(bloodDef, 4));
 
 				IntVec3 targetPos = origin + GenRadial.RadialPattern[Rand.Range(GenRadial.NumCellsInRadius(explosionRadius*1.5f), GenRadial.NumCellsInRadius(explosionRadius * 2.5f))];
-				projectile.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.All);
+				projectileBlood.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.All);
 
 				if(i < numProjectilesMeat)
 				{
-					ProjectileMeat projectileMeat = (ProjectileMeat)GenSpawn.Spawn(TD_ProjectileMeat, startPos, map);
+					ProjectileItem projectileMeat = (ProjectileItem)GenSpawn.Spawn(TD_ProjectileMeat, startPos, map);
 
+					// Find what to launch based on butcher products:
 					if (pawn.GetStatValue(StatDefOf.MeatAmount) is float meatCount && meatCount > 0)
 					{
-						potentialProjectileDefs.Add(new(pawn.def.race.meatDef, (int)meatCount));
+						potentialProjectileDefs.Add(new(pawn.def.race.meatDef, ((int)meatCount + 9) / 10));
 					}
 
 					if (pawn.GetStatValue(StatDefOf.LeatherAmount) is float leatherCount && leatherCount > 0)
 					{
-						potentialProjectileDefs.Add(new(pawn.def.race.leatherDef, (int)leatherCount));
+						potentialProjectileDefs.Add(new(pawn.def.race.leatherDef, ((int)leatherCount + 9) / 10));
 					}
 
 					if(pawn.def.butcherProducts != null)
 					{
-						potentialProjectileDefs.AddRange(pawn.def.butcherProducts);
+						potentialProjectileDefs.AddRange(pawn.def.butcherProducts.Select(dc => new ThingDefCountClass(dc.thingDef, dc.count + 9 / 10)));
 					}
 
 					if (!pawn.RaceProps.Humanlike)
@@ -90,11 +91,12 @@ namespace Bloody_Mess
 						}
 					}
 
+					// Decide on The Chosen Meat
 					Log.Message($"ProjectileMeat for {pawn} could launch {potentialProjectileDefs.ToStringSafeEnumerable()}");
 					ThingDefCountClass theChosenMeat = potentialProjectileDefs.RandomElementByWeightWithFallback(o => o.count);
 					potentialProjectileDefs.Clear();
 
-					projectileMeat.SetMeat(theChosenMeat);
+					projectileMeat.SetItem(theChosenMeat);
 
 					Log.Message($"ProjectileMeat lauching ({theChosenMeat}) at {targetPos}");
 					projectileMeat.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.None);
@@ -103,38 +105,25 @@ namespace Bloody_Mess
 		}
 	}
 
-	public class ProjectileBlood : Projectile
+	public class ProjectileItem : Projectile
 	{
-		public ThingDef bloodDef;
+		private ThingDef itemDef;
+		private int itemCount;
+		private Material itemMat;
+		private Mesh mesh;
 
-		//should be protected
-		public override void Impact(Thing hitThing, bool blockedByShield = false)
-		{
-//			Log.Message($"ProjectileBlood impacted ({hitThing}) at {Position}");
-			FilthMaker.TryMakeFilth(Position, Map, bloodDef, 4);
-			//todo: cover pawns in blood? hediff like a wound that shows bloody mark?
-
-			base.Impact(hitThing, blockedByShield);
-		}
-	}
-
-	public class ProjectileMeat : Projectile
-	{
-		private ThingDef meatDef;
-		private int meatCount;
-		private Material meatMat;
-
-		public void SetMeat(ThingDefCountClass defCount)
+		public void SetItem(ThingDefCountClass defCount)
 		{
 			//probably never happens but let's be sure to get no nullrefs
 			if (defCount == null)
 				defCount = new(ThingDefOf.Gold, 100);
 
-			meatDef = defCount.thingDef;
-			meatCount = (defCount.count + 9) / 10;
-			meatMat = meatDef.graphic is Graphic_StackCount gr
-				? gr.SubGraphicForStackCount(meatCount, def).MatSingle
-				: meatDef.DrawMatSingle;
+			mesh = MeshPool.GridPlane(new Vector2(def.size.x, def.size.z));
+			itemDef = defCount.thingDef;
+			itemCount = defCount.count;
+			itemMat = itemDef.graphic is Graphic_StackCount gr
+				? gr.SubGraphicForStackCount(itemCount, def).MatSingle
+				: itemDef.DrawMatSingle;
 		}
 
 		public override Graphic Graphic
@@ -143,11 +132,11 @@ namespace Bloody_Mess
 			{
 				if (graphicInt == null)
 				{
-					if (meatDef.graphicData == null)
+					if (itemDef.graphicData == null)
 					{
 						return BaseContent.BadGraphic;
 					}
-					graphicInt = meatDef.graphicData.GraphicColoredFor(this);
+					graphicInt = itemDef.graphicData.GraphicColoredFor(this);
 				}
 				return graphicInt;
 			}
@@ -155,7 +144,7 @@ namespace Bloody_Mess
 
 		public override void Draw()
 		{
-			//Same as root but meatDef
+			//Same as root but meatDef's graphicData.
 			float num = ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction);
 			Vector3 drawPos = DrawPos;
 			Vector3 position = drawPos + new Vector3(0f, 0f, 1f) * num;
@@ -163,20 +152,27 @@ namespace Bloody_Mess
 			{
 				DrawShadow(drawPos, num);
 			}
-
-			Graphics.DrawMesh(MeshPool.GridPlane(meatDef.graphicData.drawSize), position, ExactRotation, meatMat, 0);
+			Graphics.DrawMesh(mesh, position, ExactRotation, itemMat, 0);
 			Comps_PostDraw();
 		}
 
 		//should be protected
 		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
-//			Log.Message($"ProjectileMeat impacted ({hitThing}) at {Position}");
-			Thing impactMeat = ThingMaker.MakeThing(meatDef);
-			impactMeat.stackCount = meatCount;
-			GenSpawn.Spawn(impactMeat, Position, Map);
-			//todo: cover pawns in blood? hediff like a wound that shows bloody mark?
+			//			Log.Message($"ProjectileItem impacted ({hitThing}) at {Position}");
+			if (itemDef.IsFilth)
+			{
+				FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
+			}
+			else
+			{
+				Thing impactMeat = ThingMaker.MakeThing(itemDef);
+				impactMeat.stackCount = itemCount;
+				GenSpawn.Spawn(impactMeat, Position, Map);
+			}
 
+			//todo: cover hitThing pawns in blood? hediff like a wound that shows bloody mark?
+			//todo: damage pawns with item's blunt damage?
 			base.Impact(hitThing, blockedByShield);
 		}
 	}
