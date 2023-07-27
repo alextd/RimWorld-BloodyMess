@@ -30,6 +30,7 @@
 
 
 	<ThingDef>
+		<defName>TD_ProjectileBlood</defName>
 		<category>Projectile</category>
 		<tickerType>Normal</tickerType>
 		<altitudeLayer>Projectile</altitudeLayer>
@@ -37,9 +38,6 @@
 		<label>blood splatter</label>
 		<useHitPoints>False</useHitPoints>
 		<neverMultiSelect>True</neverMultiSelect>
-
-
-		<defName>TD_ProjectileBlood</defName>
 		<graphicData>
 			<!-- Just like the filth -->
 			<graphicClass>Graphic_Cluster</graphicClass>
@@ -56,6 +54,7 @@
 	</ThingDef>
 
 	<ThingDef>
+		<defName>TD_ProjectileMeat</defName>
 		<category>Projectile</category>
 		<tickerType>Normal</tickerType>
 		<altitudeLayer>Projectile</altitudeLayer>
@@ -63,9 +62,6 @@
 		<label>bloody meat</label>
 		<useHitPoints>False</useHitPoints>
 		<neverMultiSelect>True</neverMultiSelect>
-
-
-		<defName>TD_ProjectileMeat</defName>
 		<projectile>
 			<damageDef>TD_BloodSplatterDamage</damageDef>
 			<speed>20</speed>
