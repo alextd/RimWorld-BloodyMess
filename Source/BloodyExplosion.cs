@@ -129,22 +129,6 @@ namespace Bloody_Mess
 			rotSpeed = Rand.Range(180, 720);
 		}
 
-		public override Graphic Graphic
-		{
-			get
-			{
-				if (graphicInt == null)
-				{
-					if (itemDef.graphicData == null)
-					{
-						return BaseContent.BadGraphic;
-					}
-					graphicInt = itemDef.graphicData.GraphicColoredFor(this);
-				}
-				return graphicInt;
-			}
-		}
-
 		public override void Draw()
 		{
 			//Same as root but meatDef's graphicData.
