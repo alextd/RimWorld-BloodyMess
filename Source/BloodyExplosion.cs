@@ -17,8 +17,8 @@ namespace Bloody_Mess
 		public static ThingDef TD_ProjectileMeat;
 
 		const float explosionRadius = 2.5f;
-		const float chance = 0.5f;
-		const int count = 2;
+		const float filthChance = 0.5f;
+		const int filthCount = 2;
 		const float propagationSpeed = 0.25f;
 		const int numProjectiles = 4;
 		const int numProjectilesMeat = 1;
@@ -41,11 +41,11 @@ namespace Bloody_Mess
 														explosionSound: SoundDefOf.Hive_Spawn, // todo: maybe something from https://www.youtube.com/watch?v=vsF4BM1qhok
 														propagationSpeed: propagationSpeed,
 														preExplosionSpawnThingDef: bloodDef,
-														preExplosionSpawnChance: chance,
-														preExplosionSpawnThingCount: count,
+														preExplosionSpawnChance: filthChance,
+														preExplosionSpawnThingCount: filthCount,
 														postExplosionSpawnThingDef: bloodDef,
-														postExplosionSpawnChance: chance/2,
-														postExplosionSpawnThingCount: count);
+														postExplosionSpawnChance: filthChance/2,
+														postExplosionSpawnThingCount: filthCount);
 
 
 			IntVec3 startPos = pawn.Position;//seems meaningless to projectiles.
@@ -99,7 +99,7 @@ namespace Bloody_Mess
 					projectileMeat.SetItem(theChosenMeat);
 
 					Log.Message($"ProjectileMeat launching ({theChosenMeat}) at {targetPos}");
-					projectileMeat.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.None);
+					projectileMeat.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.All);
 				}
 			}
 		}
@@ -146,7 +146,7 @@ namespace Bloody_Mess
 		//should be protected
 		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
-			Log.Message($"ProjectileItem impacted ({hitThing}) at {Position}");
+			Log.Message($"ProjectileItem {itemDef} impacted ({hitThing}) at {Position}, HitFlags = {HitFlags}");
 			if (itemDef.IsFilth)
 			{
 				FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
