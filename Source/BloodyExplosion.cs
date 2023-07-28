@@ -111,6 +111,7 @@ namespace Bloody_Mess
 		private int itemCount;
 		private Material itemMat;
 		private Mesh mesh;
+		private float rotSpeed;
 
 		public void SetItem(ThingDefCountClass defCount)
 		{
@@ -124,6 +125,8 @@ namespace Bloody_Mess
 			itemMat = itemDef.graphic is Graphic_StackCount gr
 				? gr.SubGraphicForStackCount(itemCount, def).MatSingle
 				: itemDef.DrawMatSingle;
+
+			rotSpeed = Rand.Range(180, 720);
 		}
 
 		public override Graphic Graphic
@@ -152,7 +155,7 @@ namespace Bloody_Mess
 			{
 				DrawShadow(drawPos, num);
 			}
-			Graphics.DrawMesh(mesh, position, ExactRotation, itemMat, 0);
+			Graphics.DrawMesh(mesh, position, Quaternion.AngleAxis(rotSpeed * DistanceCoveredFraction, Vector3.up), itemMat, 0);
 			Comps_PostDraw();
 		}
 
