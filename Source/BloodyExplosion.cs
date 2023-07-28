@@ -186,6 +186,8 @@ namespace Bloody_Mess
 		{
 			//watered down DamageWorker because ThrowExplosionCell also throws dust.
 
+			// Also now that we're here, tweak the values.
+
 			// FleckMaker.ThrowExplosionCell(c, explosion.Map, def.explosionCellFleck, color);
 			// public static void ThrowExplosionCell(IntVec3 cell, Map map, FleckDef fleckDef, Color color)public static void ThrowExplosionCell(IntVec3 cell, Map map, FleckDef fleckDef, Color color)
 
@@ -193,7 +195,10 @@ namespace Bloody_Mess
 			if (cell.ShouldSpawnMotesAt(map))
 			{
 				float t = Mathf.Clamp01((explosion.Position - cell).LengthHorizontal / explosion.radius);
-				Color color = Color.Lerp(def.explosionColorCenter, def.explosionColorEdge, t);
+				Color color = explosion.preExplosionSpawnThingDef == ThingDefOf.Filth_MachineBits ? Color.grey :
+					explosion.preExplosionSpawnThingDef.graphicData.color;
+				color.a = 1 - t;
+
 				FleckCreationData dataStatic = FleckMaker.GetDataStatic(cell.ToVector3Shifted(), map, def.explosionCellFleck);
 				dataStatic.rotation = Rand.Range(0, 360);
 				dataStatic.instanceColor = color;
