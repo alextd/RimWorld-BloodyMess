@@ -169,9 +169,10 @@ namespace Bloody_Mess
 			}
 			else
 			{
-				Thing impactMeat = ThingMaker.MakeThing(itemDef);
-				impactMeat.stackCount = itemCount;
-				GenSpawn.Spawn(impactMeat, Position, Map);
+				Thing impactItem = ThingMaker.MakeThing(itemDef);
+				impactItem.stackCount = itemCount;
+				if (!GenPlace.TryPlaceThing(impactItem, Position, Map, ThingPlaceMode.Near))
+					impactItem.Destroy();
 			}
 
 			//todo: cover hitThing pawns in blood? hediff like a wound that shows bloody mark?
