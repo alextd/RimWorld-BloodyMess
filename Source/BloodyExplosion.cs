@@ -98,7 +98,7 @@ namespace Bloody_Mess
 
 					projectileMeat.SetItem(theChosenMeat);
 
-					Log.Message($"ProjectileMeat lauching ({theChosenMeat}) at {targetPos}");
+					Log.Message($"ProjectileMeat launching ({theChosenMeat}) at {targetPos}");
 					projectileMeat.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.None);
 				}
 			}
@@ -162,7 +162,7 @@ namespace Bloody_Mess
 		//should be protected
 		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
-			//			Log.Message($"ProjectileItem impacted ({hitThing}) at {Position}");
+			Log.Message($"ProjectileItem impacted ({hitThing}) at {Position}");
 			if (itemDef.IsFilth)
 			{
 				FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
