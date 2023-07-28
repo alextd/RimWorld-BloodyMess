@@ -195,7 +195,7 @@ namespace Bloody_Mess
 				float t = Mathf.Clamp01((explosion.Position - cell).LengthHorizontal / explosion.radius);
 				Color color = Color.Lerp(def.explosionColorCenter, def.explosionColorEdge, t);
 				FleckCreationData dataStatic = FleckMaker.GetDataStatic(cell.ToVector3Shifted(), map, def.explosionCellFleck);
-				dataStatic.rotation = 90 * Rand.RangeInclusive(0, 3);
+				dataStatic.rotation = Rand.Range(0, 360);
 				dataStatic.instanceColor = color;
 				map.flecks.CreateFleck(dataStatic);
 				/*
