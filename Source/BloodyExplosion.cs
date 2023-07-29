@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using RimWorld;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Bloody_Mess
@@ -194,8 +197,47 @@ namespace Bloody_Mess
 					ThrowDustPuff(cell, map, 1.2f);
 				}
 				*/
+			}
 		}
 	}
+
+
+	// Make ProjectileItem auto-pass InterceptChanceFactorFromDistance so walls intercept projectiles at close range
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.CheckForFreeIntercept))]
+	public static class CheckForFreeInterceptPass
+	{
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			MethodInfo InterceptChanceFactorFromDistanceInfo = AccessTools.Method("VerbUtility:InterceptChanceFactorFromDistance");
+
+			foreach (var inst in instructions)
+			{
+				yield return inst;
+
+				// One might ideally skip the call but it's easier to just replace the value on the stack.
+				if(inst.Calls(InterceptChanceFactorFromDistanceInfo))
+				{
+					// on stack: float from InterceptChanceFactorFromDistanceInfo, ready for stloc.0
+					yield return new(OpCodes.Ldarg_0);//Projectile this
+					yield return new(OpCodes.Call, AccessTools.Method(typeof(CheckForFreeInterceptPass), nameof(OneIfProjectileItem))); // OneIfProjectileItem(ret, this)
+				}
+			}
+		}
+
+		public static float OneIfProjectileItem(float value, Projectile projectile)
+		{
+			if (projectile is ProjectileItem)
+				return 1;
+			return value;
+		}
+	}
+
+
+	[HarmonyPatch(typeof(Projectile), nameof(Projectile.CheckForFreeInterceptBetween))]
+	public static class CheckForFreeInterceptBetweenPass
+	{
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) =>
+			CheckForFreeInterceptPass.Transpiler(instructions);
 	}
 
 }
