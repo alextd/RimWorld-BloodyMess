@@ -18,7 +18,7 @@ namespace Bloody_Mess
 		//private static void GenerateTraits(Pawn pawn, PawnGenerationRequest request)
 		public static void Postfix(Pawn pawn)
 		{
-			if(Rand.Chance(0.05f))
+			if(Rand.Chance(Mod.settings.traitChance))
 			{
 				Trait trait = new(TD_BloodyMess);
 				pawn.story.traits.GainTrait(trait);
