@@ -34,12 +34,16 @@ namespace Bloody_Mess
 		}
 		public static void TriggerBloodyMess(Pawn target, DamageInfo? dinfo)
 		{
-			if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn && (pawn.story?.traits?.HasTrait(BloodyTrait.TD_BloodyMess) ?? false))
+			if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn)
 			{
-				BloodyExplosion.DoBloodyExplosion(target);
-				BloodyDestroyPart(target);
-
-			}
+				if (Rand.Chance(Mod.settings.alwaysBloodyMess) ||
+					(dinfo.Value.Def.isExplosive && Rand.Chance(Mod.settings.allExplosionsBloodyMess)) ||
+					(pawn.story?.traits?.HasTrait(BloodyTrait.TD_BloodyMess) ?? false))
+				{
+					BloodyExplosion.DoBloodyExplosion(target);
+					BloodyDestroyPart(target);
+				}
+			} 
 		}
 
 		public static void BloodyDestroyPart(Pawn pawn)
