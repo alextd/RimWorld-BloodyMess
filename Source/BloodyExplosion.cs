@@ -18,6 +18,7 @@ namespace Bloody_Mess
 		public static DamageDef TD_BloodSplatterDamage;
 		public static ThingDef TD_ProjectileBlood;
 		public static ThingDef TD_ProjectileMeat;
+		public static SoundDef Explosion_Rocket;
 
 		const float explosionRadius = 2.5f;
 		const float filthChance = 0.5f;
@@ -34,6 +35,7 @@ namespace Bloody_Mess
 			Map map = pawn.Map;
 			IntVec3 origin = pawn.Position;
 			ThingDef bloodDef = pawn.RaceProps.BloodDef;
+			SoundDef soundDef = pawn.RaceProps.IsFlesh ? SoundDefOf.Hive_Spawn : Explosion_Rocket;
 
 			GenExplosion.DoExplosion(origin,
 														map,
@@ -41,7 +43,7 @@ namespace Bloody_Mess
 														TD_BloodSplatterDamage,
 														null,//attacker?
 														doVisualEffects: false,
-														explosionSound: SoundDefOf.Hive_Spawn, // todo: maybe something from https://www.youtube.com/watch?v=vsF4BM1qhok
+														explosionSound: soundDef, // todo: maybe something from https://www.youtube.com/watch?v=vsF4BM1qhok
 														propagationSpeed: propagationSpeed,
 														preExplosionSpawnThingDef: bloodDef,
 														preExplosionSpawnChance: filthChance,
