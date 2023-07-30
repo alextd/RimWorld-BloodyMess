@@ -34,16 +34,45 @@ namespace Bloody_Mess
 		}
 		public static void TriggerBloodyMess(Pawn target, DamageInfo? dinfo)
 		{
-			if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn)
+			bool doMess = false;
+
+			if (Rand.Chance(Mod.settings.alwaysBloodyMess))
+				//easy
+				doMess = true;
+			else
 			{
-				if (Rand.Chance(Mod.settings.alwaysBloodyMess) ||
-					(dinfo.Value.Def.isExplosive && Rand.Chance(Mod.settings.allExplosionsBloodyMess)) ||
-					(pawn.story?.traits?.HasTrait(BloodyTrait.TD_BloodyMess) ?? false))
+				Pawn instigator = null;
+				bool explosion = false;
+				if (dinfo.HasValue && dinfo.Value.Instigator is Pawn pawn)
 				{
-					BloodyExplosion.DoBloodyExplosion(target);
-					BloodyDestroyPart(target);
+					// should needed info from damageinfo...
+					instigator = pawn;
+					explosion = dinfo.Value.Def.isExplosive;
 				}
-			} 
+				else
+				{
+					// Check explosions because an explosion can cause hediffs that kill the target without passing along the DamageInfo
+					foreach (Explosion exp in target.Map.listerThings.ThingsOfDef(ThingDefOf.Explosion))
+						if (exp.damagedThings.Contains(target))
+						{
+							instigator = exp.instigator as Pawn;
+							explosion = true;
+							break;
+						}
+				}
+				if (
+					(explosion && Rand.Chance(Mod.settings.allExplosionsBloodyMess)) ||
+					(instigator?.story?.traits?.HasTrait(BloodyTrait.TD_BloodyMess) ?? false))
+				{
+					doMess = true;
+				}
+			}
+			if (doMess)
+			{
+				BloodyExplosion.DoBloodyExplosion(target);
+				BloodyDestroyPart(target);
+			}
+
 		}
 
 		public static void BloodyDestroyPart(Pawn pawn)
