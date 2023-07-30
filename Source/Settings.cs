@@ -15,6 +15,7 @@ namespace Bloody_Mess
 		public float traitChance = 0.05f;
 		public float alwaysBloodyMess = 0;
 		public float allExplosionsBloodyMess = 0;
+		public float meatPercent = 0.1f;
 
 		public void DoWindowContents(Rect wrect)
 		{
@@ -24,6 +25,7 @@ namespace Bloody_Mess
 			options.SliderLabeled("The chance that any new person gets the Bloody Mess trait", ref traitChance, "{0:P0}");
 			options.SliderLabeled("Also just randomly cause a bloody mess on any kill", ref alwaysBloodyMess, "{0:P0}");
 			options.SliderLabeled("Randomly cause a bloody mess on any explosive kill", ref allExplosionsBloodyMess, "{0:P0}");
+			options.SliderLabeled("Amount of meat thrown from the bloody mess", ref meatPercent, "{0:P0}");
 
 			options.End();
 		}
@@ -33,6 +35,7 @@ namespace Bloody_Mess
 			Scribe_Values.Look(ref traitChance, "traitChance", 0.05f);
 			Scribe_Values.Look(ref alwaysBloodyMess, "alwaysBloodyMess", 0);
 			Scribe_Values.Look(ref allExplosionsBloodyMess, "allExplosionsBloodyMess", 0);
+			Scribe_Values.Look(ref meatPercent, "meatPercent", 0.1f);
 		}
 	}
 }

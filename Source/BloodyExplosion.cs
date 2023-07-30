@@ -70,17 +70,17 @@ namespace Bloody_Mess
 					// Find what to launch based on butcher products:
 					if (pawn.GetStatValue(StatDefOf.MeatAmount) is float meatCount && meatCount > 0)
 					{
-						potentialProjectileDefs.Add(new(pawn.def.race.meatDef, ((int)meatCount + 9) / 10));
+						potentialProjectileDefs.Add(new(pawn.def.race.meatDef, (int)meatCount));
 					}
 
 					if (pawn.GetStatValue(StatDefOf.LeatherAmount) is float leatherCount && leatherCount > 0)
 					{
-						potentialProjectileDefs.Add(new(pawn.def.race.leatherDef, ((int)leatherCount + 9) / 10));
+						potentialProjectileDefs.Add(new(pawn.def.race.leatherDef, (int)leatherCount));
 					}
 
 					if(pawn.def.butcherProducts != null)
 					{
-						potentialProjectileDefs.AddRange(pawn.def.butcherProducts.Select(dc => new ThingDefCountClass(dc.thingDef, dc.count + 9 / 10)));
+						potentialProjectileDefs.AddRange(pawn.def.butcherProducts.Select(dc => new ThingDefCountClass(dc.thingDef, dc.count)));
 					}
 
 					if (!pawn.RaceProps.Humanlike)
@@ -126,7 +126,7 @@ namespace Bloody_Mess
 
 			mesh = MeshPool.GridPlane(new Vector2(def.size.x, def.size.z));
 			itemDef = defCount.thingDef;
-			itemCount = defCount.count;
+			itemCount = Mathf.CeilToInt(defCount.count * Mod.settings.meatPercent);
 			itemMat = itemDef.graphic is Graphic_StackCount gr
 				? gr.SubGraphicForStackCount(itemCount, def).MatSingle
 				: itemDef.DrawMatSingle;
@@ -151,17 +151,22 @@ namespace Bloody_Mess
 		//should be protected
 		public override void Impact(Thing hitThing, bool blockedByShield = false)
 		{
-			Log.Message($"ProjectileItem {itemDef} impacted ({hitThing}) at {Position}, HitFlags = {HitFlags}");
-			if (itemDef.IsFilth)
+			if (itemCount > 0)
 			{
-				FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
-			}
-			else
-			{
-				Thing impactItem = ThingMaker.MakeThing(itemDef);
-				impactItem.stackCount = itemCount;
-				if (!GenPlace.TryPlaceThing(impactItem, Position, Map, ThingPlaceMode.Near))
-					impactItem.Destroy();
+				// with 0: Just graphics, no spawn
+
+				Log.Message($"ProjectileItem {itemDef} impacted ({hitThing}) at {Position}, HitFlags = {HitFlags}");
+				if (itemDef.IsFilth)
+				{
+					FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
+				}
+				else
+				{
+					Thing impactItem = ThingMaker.MakeThing(itemDef);
+					impactItem.stackCount = itemCount;
+					if (!GenPlace.TryPlaceThing(impactItem, Position, Map, ThingPlaceMode.Near))
+						impactItem.Destroy();
+				}
 			}
 
 			//todo: cover hitThing pawns in blood? hediff like a wound that shows bloody mark?
