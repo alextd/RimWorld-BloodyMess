@@ -21,7 +21,7 @@ namespace Bloody_Mess
 		public static SoundDef Explosion_Rocket;
 
 		const float explosionRadius = 2.5f;
-		const float filthChance = 0.5f;
+		const float filthChanceBase = 0.5f;
 		const int filthCount = 2;
 		const float propagationSpeed = 0.25f;
 		const int numProjectiles = 4;
@@ -36,8 +36,9 @@ namespace Bloody_Mess
 			IntVec3 origin = pawn.Position;
 			ThingDef bloodDef = pawn.RaceProps.BloodDef;
 			SoundDef soundDef = pawn.RaceProps.IsFlesh ? SoundDefOf.Hive_Spawn : Explosion_Rocket;
+			float filthChance = Mod.settings.clean ? 0 : filthChanceBase;
 
-			GenExplosion.DoExplosion(origin,
+				GenExplosion.DoExplosion(origin,
 														map,
 														explosionRadius,
 														TD_BloodSplatterDamage,
@@ -55,12 +56,12 @@ namespace Bloody_Mess
 
 			IntVec3 startPos = pawn.Position;//seems meaningless to projectiles.
 			Vector3 launchPos = pawn.DrawPos;
-			for (int i = 0; i < numProjectiles; i++)
+			for (int i = 0; i < numProjectiles * (Mod.settings.clean ? 3 : 1); i++)
 			{
 				ProjectileItem projectileBlood = (ProjectileItem)GenSpawn.Spawn(TD_ProjectileBlood, startPos, map);
 				projectileBlood.SetItem(new(bloodDef, 4));
 
-				IntVec3 targetPos = origin + GenRadial.RadialPattern[Rand.Range(GenRadial.NumCellsInRadius(explosionRadius*1.5f), GenRadial.NumCellsInRadius(explosionRadius * 2.5f))];
+				IntVec3 targetPos = origin + GenRadial.RadialPattern[Rand.Range(GenRadial.NumCellsInRadius(explosionRadius*(Mod.settings.clean?0.5f:1.5f)), GenRadial.NumCellsInRadius(explosionRadius * 2.5f))];
 				projectileBlood.Launch(pawn, launchPos, targetPos, targetPos, ProjectileHitFlags.All);
 
 				if(i < numProjectilesMeat)
@@ -158,7 +159,8 @@ namespace Bloody_Mess
 				Log.Message($"ProjectileItem {itemDef} impacted ({hitThing}) at {Position}, HitFlags = {HitFlags}");
 				if (itemDef.IsFilth)
 				{
-					FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
+					if(!Mod.settings.clean)
+						FilthMaker.TryMakeFilth(Position, Map, itemDef, itemCount);
 				}
 				else
 				{
