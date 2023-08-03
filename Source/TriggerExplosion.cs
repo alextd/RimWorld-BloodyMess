@@ -34,6 +34,9 @@ namespace Bloody_Mess
 		}
 		public static void TriggerBloodyMess(Pawn target, DamageInfo? dinfo)
 		{
+			if (target?.Map == null)
+				return;
+
 			bool doMess = false;
 
 			if (Rand.Chance(Mod.settings.alwaysBloodyMess))
