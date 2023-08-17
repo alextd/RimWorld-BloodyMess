@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TD.BloodyMess>Bloody Mess</TD.BloodyMess>
+	<TD.TheChanceThatAnyNewPersonGetsTheBloodyMessTrait>The chance that any new person gets the Bloody Mess trait</TD.TheChanceThatAnyNewPersonGetsTheBloodyMessTrait>
+	<TD.AlsoJustRandomlyCauseABloodyMessOnAnyKill>Also just randomly cause a bloody mess on any kill</TD.AlsoJustRandomlyCauseABloodyMessOnAnyKill>
+	<TD.RandomlyCauseABloodyMessOnAnyExplosiveKill>Randomly cause a bloody mess on any explosive kill</TD.RandomlyCauseABloodyMessOnAnyExplosiveKill>
+	<TD.AmountOfMeatThrownFromTheBloodyMess>Amount of meat thrown from the bloody mess</TD.AmountOfMeatThrownFromTheBloodyMess>
+	<TD.NoActualMessJustGraphics>No actual mess, just graphics</TD.NoActualMessJustGraphics>
+	
+</LanguageData>

@@ -23,11 +23,11 @@ namespace Bloody_Mess
 			var options = new Listing_Standard();
 			options.Begin(wrect);
 
-			options.SliderLabeled("The chance that any new person gets the Bloody Mess trait", ref traitChance, "{0:P0}");
-			options.SliderLabeled("Also just randomly cause a bloody mess on any kill", ref alwaysBloodyMess, "{0:P0}");
-			options.SliderLabeled("Randomly cause a bloody mess on any explosive kill", ref allExplosionsBloodyMess, "{0:P0}");
-			options.SliderLabeled("Amount of meat thrown from the bloody mess", ref meatPercent, "{0:P0}");
-			options.CheckboxLabeled("No actual mess, just graphics", ref clean);
+			options.SliderLabeled("TD.TheChanceThatAnyNewPersonGetsTheBloodyMessTrait".Translate(), ref traitChance, "{0:P0}");
+			options.SliderLabeled("TD.AlsoJustRandomlyCauseABloodyMessOnAnyKill".Translate(), ref alwaysBloodyMess, "{0:P0}");
+			options.SliderLabeled("TD.RandomlyCauseABloodyMessOnAnyExplosiveKill".Translate(), ref allExplosionsBloodyMess, "{0:P0}");
+			options.SliderLabeled("TD.AmountOfMeatThrownFromTheBloodyMess".Translate(), ref meatPercent, "{0:P0}");
+			options.CheckboxLabeled("TD.NoActualMessJustGraphics".Translate(), ref clean);
 
 			options.End();
 		}

@@ -32,7 +32,7 @@ namespace Bloody_Mess
 
 		public override string SettingsCategory()
 		{
-			return "Bloody Mess";
+			return "TD.BloodyMess".Translate();
 		}
 	}
 }
