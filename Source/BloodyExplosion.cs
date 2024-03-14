@@ -9,6 +9,7 @@ using Verse;
 using RimWorld;
 using HarmonyLib;
 using UnityEngine;
+using LudeonTK;
 
 namespace Bloody_Mess
 {
@@ -19,6 +20,7 @@ namespace Bloody_Mess
 		public static ThingDef TD_ProjectileBlood;
 		public static ThingDef TD_ProjectileMeat;
 		public static SoundDef Explosion_Rocket;
+		public static SoundDef Hive_Spawn;
 
 		const float explosionRadius = 2.5f;
 		const float filthChanceBase = 0.5f;
@@ -35,7 +37,7 @@ namespace Bloody_Mess
 			Map map = pawn.Map;
 			IntVec3 origin = pawn.Position;
 			ThingDef bloodDef = pawn.RaceProps.BloodDef;
-			SoundDef soundDef = pawn.RaceProps.IsFlesh ? SoundDefOf.Hive_Spawn : Explosion_Rocket;
+			SoundDef soundDef = pawn.RaceProps.IsFlesh ? Hive_Spawn : Explosion_Rocket;
 			float filthChance = Mod.settings.clean ? 0 : filthChanceBase;
 
 				GenExplosion.DoExplosion(origin,
@@ -135,11 +137,11 @@ namespace Bloody_Mess
 			rotSpeed = Rand.Range(180, 720);
 		}
 
-		public override void Draw()
+		public override void DrawAt(Vector3 drawLoc, bool flip = false)
 		{
 			//Same as root but meatDef's graphicData.
 			float num = ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction);
-			Vector3 drawPos = DrawPos;
+			Vector3 drawPos = drawLoc;
 			Vector3 position = drawPos + new Vector3(0f, 0f, 1f) * num;
 			if (def.projectile.shadowSize > 0f)
 			{
